@@ -2,7 +2,7 @@
 
 
 
-Setting up ESP8266:
+###### Setting up ESP8266:
 
 \- install correct driver from https://www.silabs.com/software-and-tools/usb-to-uart-bridge-vcp-drivers?tab=downloads
 
@@ -12,15 +12,80 @@ Setting up ESP8266:
 
 
 
-using pir sensor:
+###### using pir sensor:
 
 \- senses movement, then writes HIGH to a data pin before changing it back to low
 
 \- use interrupts
 
-**KEY NOTE**
+so i simply set motion to true then set it back to false once ive dealt with it in main program
+
+NOTE 2:
+
+60s startup time
+
+had to power it using 3.3v v by using a different pin on the board
+
+https://techgurka.blogspot.com/2013/05/cheap-pyroelectric-infrared-pir-motion.html
+
+having major issues with it being unrealiable and just activating periodically
+
+baud rate for esp8266 is 115200
+
+changing sensitivity of sensor, didn't do anything
+
+changing delay for sensor
+
+Turns out my code is of a poor quality
+
+
+
+###### **NOTES FOR PROGRAMMING PRINCIPLES EMBEDDED SYSTEMS #1**
+
+interrupts are used because you dont need to constantly check the current value of a pin. when a change is detected, an event is triggered
+
+
+
+for Arduino and ESP32, use attachInterrupt() function to program interrupts
+
+parameters are: GPIO \[use digitalPinToInterrupt(pin)], the ISR \[notes on that below], and the mode: 
+
+* LOW: to trigger the interrupt whenever the pin is LOW;
+* HIGH: to trigger the interrupt whenever the pin is HIGH;
+* CHANGE: to trigger the interrupt whenever the pin changes value – for example, from HIGH to LOW or LOW to HIGH;
+* FALLING: for when the pin goes from HIGH to LOW;
+* RISING: to trigger when the pin goes from LOW to HIGH.
+
+
+
+
+
+**KEY NOTES FOR ISRs**
 
 Another important thing about ISRs is that you should keep their code as fast and simple as possible and avoid things like complex operations, writing to the Serial Monitor, or using delay(). Instead, you should use a flag or counter to indicate that the interrupt happened, and then handle whatever you need to do in the main code or loop() section.
 
-so i simply set motion to true then set it back to false once ive dealt with it in main program
+
+
+Variables that are used inside ISRs and throughout the code should preferably be volatile. This prevents the compiler from caching values in registers (and skipping memory access), so reads/writes always access the actual memory location and reflect unexpected changes caused by the interrupt.
+
+
+
+**USING TIMERS**
+
+We don't use a delay function because it blocks code and doesn't allow anything else to happen, making simultaneous action impossible
+
+
+
+the *millis()* function
+
+This function returns the number of ms passed since the start of the program. It's useful because it allows us to check how much time has passed since a certain event without blocking the code
+
+**etiquette:**
+
+* use unsigned long for variables that hold time
+* use constants for variables that don't change
+* when using timers, save moments in time when you are causing an event to happen by setting previousMillis = currentMillis
+* use a bool variable to have a status on whether teh timer is currently running \[activated in ISR]
+
+
 
