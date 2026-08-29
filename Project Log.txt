@@ -1,0 +1,9 @@
+#Project Log
+
+Setting up ESP8266:
+- install correct driver from https://www.silabs.com/software-and-tools/usb-to-uart-bridge-vcp-drivers?tab=downloads
+- ensure that the usb cable being used is appropriate to transmit data
+- setup arduino IDE with the board with tutorial from lastminuteengineers
+
+Setup header files:
+- 

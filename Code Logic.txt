@@ -1,0 +1,24 @@
+INDEPENDENT PROCESSES:
+- Displaying time on 7 segment display
+- Motion sensor turning on and off system: when off the only thing being checked is the sensor
+- Fan operation [speed, on/off]
+- Fan movement [oscillation/custom angle]
+- Auxilliary feedback like light and sound on different actions.
+
+FAN OPERATION:
+- A relay will be used to carry the 3.3v signal OUT to drive a motor connected to the NO pin
+- a potentiometer will be connected in series 
+- A button should also be able to control the fan on it's own
+
+FAN MOVEMENT:
+- Two modes: Oscillation mode and custom angle mode
+- Oscillation mode has the servo rotate back and forth
+- custom angle mode reads the analogue input on the joystick to change the angle
+- IMPORTANT NOTE: DO NOT MAP THE POSITION OF THE JOYSTICK TO SERVO, RATHER READ THE DIFFERENCE FROM EQUILIBRIUM POSITION TO DETERMINE RATE OF CHANGE
+- to switch between the two, read joystick button
+
+STATES:
+- ON/OFF
+- OSCILLATION/CUSTOM
+
+
