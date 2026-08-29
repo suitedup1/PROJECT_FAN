@@ -193,5 +193,21 @@ output spits out regilated voltage
 
 
 
-For a DC motor i need to use a motor driver 
+For a DC motor i need to use a motor driver l298n
+
+for the joystick a 5v input is still required
+
+Okay if i can order some voltage regulators they should solves the power issue
+
+nevermind they are extremely inefficient and waste power as heat 
+
+But they do provide a stable voltage and low noise t really care about that. 
+
+
+
+switching regulators are more expensive
+
+
+
+options are buck converters or voltage regulatpre
 
