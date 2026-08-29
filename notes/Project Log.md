@@ -12,7 +12,7 @@
 
 
 
-###### using pir sensor:
+##### **using pir sensor:**
 
 \- senses movement, then writes HIGH to a data pin before changing it back to low
 
@@ -86,6 +86,10 @@ This function returns the number of ms passed since the start of the program. It
 * use constants for variables that don't change
 * when using timers, save moments in time when you are causing an event to happen by setting previousMillis = currentMillis
 * use a bool variable to have a status on whether teh timer is currently running \[activated in ISR]
+
+
+
+
 
 
 
