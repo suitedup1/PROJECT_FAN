@@ -3,7 +3,7 @@ INDEPENDENT PROCESSES:
 - Motion sensor turning on and off system: when off the only thing being checked is the sensor
 - Fan operation [speed, on/off]
 - Fan movement [oscillation/custom angle]
-- Auxilliary feedback like light and sound on different actions.
+- Auxiliary feedback like light and sound on different actions.
 
 FAN OPERATION:
 - A relay will be used to carry the 3.3v signal OUT to drive a motor connected to the NO pin
@@ -22,3 +22,4 @@ STATES:
 - OSCILLATION/CUSTOM
 
 
+https://lastminuteengineers.com/esp8266-ntp-server-date-time-tutorial/
