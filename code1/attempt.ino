@@ -10,7 +10,7 @@ volatile bool startTimer = false;
 bool printMotion = false;
 
 const unsigned long timeSeconds = 2 * 1000UL;  //20 seconds in milliseconds
-
+/*
 void ICACHE_RAM_ATTR motionISR() {
   lastTrigger = millis();
   startTimer = true;
@@ -43,4 +43,4 @@ void loop() {
     startTimer = false;
     printMotion = false;
   }
-}
+}*/
