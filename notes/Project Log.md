@@ -175,7 +175,71 @@ In short lets not risk frying my laptop from now on.
 
 However, we have a problem.
 
-The LCD, PIR sensor, and Joystick all operate at 5v,  with the DC motor needing 6v ideally. However I only have a 9V battery that is NOT reseacheable. Slight power issue here.
+The LCD, PIR sensor, and Joystick all operate at 5v,  with the DC motor needing 6v ideally. However I only have a 9V battery that is NOT researched
+
+
+
+
+
+|**Battery** |**Voltage \[per cell]**|**Discharge rate**|**capacity range**|**Advantages**|
+|-|-|-|-|-|
+|Li-Ion|3.6-3.7V|High|High|High energy density, long life cycle|
+|Li-Po|3.7V|Very high|medium-high|light, high discharge, flexible shape|
+|NiMH|1.2V|Medium|low-medium|safe,inexpensive|
+
+
+
+
+
+Shape: best is Lipo with flat soft pouches
+
+"drones, small robots, and robotic arms frequently like LiPo since it is the sole material that allows for extremely flexible sizing."
+
+Slight power issue here.
+
+
+
+LiPo offers the highest discharge rate, making it ideal for robotics like racing bots, RC robots, and quadcopters that need quick power bursts.
+
+
+
+Li-ion: Best overall for multi-hour robotic work cycles.
+
+NiMH: Best for simple, low-cost robotics.
+
+
+
+Of all the lithium chemistries, LiFePO4, a subcategory of Li-ion, is the safest.
+
+
+
+
+
+The maximum level of protection and BMS oversight are necessary for standard LiPo packs.
+
+
+
+
+
+Although NiMH is stable, it lacks the power required for sophisticated robotics.
+
+safety issues:
+
+
+
+Why BMS \[battery management systemSo i] matters:
+
+
+
+Li-ion/LiPo packs of any size run the risk of overcharging or deep discharging, possibly letting it catch fire
+
+
+
+Safety is greatly increased by a basic PCB protection board.
+
+
+
+
 
 
 
