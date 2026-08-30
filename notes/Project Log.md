@@ -12,7 +12,7 @@
 
 
 
-###### using pir sensor:
+##### **using pir sensor:**
 
 \- senses movement, then writes HIGH to a data pin before changing it back to low
 
@@ -48,7 +48,7 @@ interrupts are used because you dont need to constantly check the current value 
 
 for Arduino and ESP32, use attachInterrupt() function to program interrupts
 
-parameters are: GPIO \[use digitalPinToInterrupt(pin)], the ISR \[notes on that below], and the mode: 
+parameters are: GPIO \[use digitalPinToInterrupt(pin)], the ISR \[notes on that below], and the mode:
 
 * LOW: to trigger the interrupt whenever the pin is LOW;
 * HIGH: to trigger the interrupt whenever the pin is HIGH;
@@ -86,6 +86,140 @@ This function returns the number of ms passed since the start of the program. It
 * use constants for variables that don't change
 * when using timers, save moments in time when you are causing an event to happen by setting previousMillis = currentMillis
 * use a bool variable to have a status on whether teh timer is currently running \[activated in ISR]
+
+
+
+
+
+
+
+Had to replace 4 digit 7 segment display because it was common anode and I'm not inverting that tutorial. 
+
+###### **Using LCD screen...**
+
+
+
+First find the address using the code supplied by lastminuteengineers
+
+address: 0x3F
+
+
+
+use LiquidCrystal\_I2C library install on Arduino ide
+
+
+
+include library
+
+create an object of the LiquidCrystal I2C class with code below
+
+// enter the I2C address and the dimensions of your LCD here
+
+LiquidCrystal\_I2C lcd(address, width, height);
+
+
+
+
+
+lcd.init() //intialises interface to lcd
+
+lcd.clear() //erases screen and moves cursor to top left corner
+
+lcd.backlight() //turns on backlight
+
+lcd.setcursor(2,0) moves cursor to row 1, col 3
+
+the cursor tells the lcd where to place new text on the screen
+
+lcd.print(text) //self explanatory
+
+lcd.blink() and lcd.noBlink() //turn on and off a blinking cursor
+
+
+
+for a message longer than 16 characters, you can scroll the display
+
+void loop() {
+
+&#x20; lcd.scrollDisplayLeft();   // scroll everything to the left by one position
+
+&#x20; delay(300);                // small delay for visible scrolling speed
+
+}
+
+
+
+###### **What actually is Vin?**
+
+
+
+note:
+
+GPIO4 and GPIO5 are the most safe to use GPIOs if you want to operate relays.
+
+
+
+Vin can be used to power the board, but it has been shown to provide output
+
+according to this comment on circuit digest:
+
+
+
+"The answer to your query is both yes and no. Yes for that because you say that you connect your NodeMCU with your Laptop/PC through USB cable, where the voltage of the USB port out is 5.0V, which you measured, shown 4.9V, you can use this power as input for nodemcu and as well as the other sensors attached with it. But on the other side, no because the USB port has very low current rating i.e., max by 500mA. If you connect NodeMCU and some kind of sensor to power up both of these, there might be maximum chance of your PC USB port get damaged"
+
+
+
+In short lets not risk frying my laptop from now on.
+
+
+
+However, we have a problem.
+
+The LCD, PIR sensor, and Joystick all operate at 5v,  with the DC motor needing 6v ideally. However I only have a 9V battery that is NOT reseacheable. Slight power issue here.
+
+
+
+a voltage regulator as 3 pins:
+
+* output
+* input
+* ground
+
+
+
+input is from the original source
+
+ground is just connected to gnd
+
+output spits out regulated voltage
+
+
+
+For a DC motor i need to use a motor driver l298n
+
+for the joystick a 5v input is still required
+
+Okay if i can order some voltage regulators they should solves the power issue
+
+nevermind they are extremely inefficient and waste power as heat 
+
+But they do provide a stable voltage and low noise t really care about that. 
+
+
+
+switching regulators are more expensive
+
+
+
+options are buck converters or voltage regulator
+
+
+
+Batteries:
+
+* Lithium-ion \[Li-in]
+* Lithium-polymer \[Li-P]
+* Nickel metal hydride \[NiMH]
 
 
 
