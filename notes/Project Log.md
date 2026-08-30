@@ -171,13 +171,15 @@ according to this comment on circuit digest:
 
 In short lets not risk frying my laptop from now on.
 
+
+
 However, we have a problem.
 
-The LCD, PIR sensor, and Joystick all operate at 5v,  with the DC motor needing 6v ideally. However I only have a 9V battery that is NOT rechearcheable. Slight power issue here.
+The LCD, PIR sensor, and Joystick all operate at 5v,  with the DC motor needing 6v ideally. However I only have a 9V battery that is NOT reseacheable. Slight power issue here.
 
 
 
-a voltage regulatorhas 3 pins:
+a voltage regulator as 3 pins:
 
 * output
 * input
@@ -189,7 +191,7 @@ input is from the original source
 
 ground is just connected to gnd
 
-output spits out regilated voltage
+output spits out regulated voltage
 
 
 
@@ -209,5 +211,15 @@ switching regulators are more expensive
 
 
 
-options are buck converters or voltage regulatpre
+options are buck converters or voltage regulator
+
+
+
+Batteries:
+
+* Lithium-ion \[Li-in]
+* Lithium-polymer \[Li-P]
+* Nickel metal hydride \[NiMH]
+
+
 
