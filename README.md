@@ -31,3 +31,10 @@ Components
 
 
 
+
+
+Libraries used:
+
+* Arduino Servo library
+* Arduino LCD screen library
+
