@@ -1,0 +1,63 @@
+volatile statuses
+is_fan_on
+oscillation_mode
+is_device_on
+pir_detected
+joystick_detected
+button_detected
+using a dictionary to hold the pin numbers
+functions:
+START/INDEPENDENT PROCESSES
+void initialise():
+	intialise all sensors, servo, motor and LCD
+	wait 1 minute
+void display_time():
+	the code to get the time and display it on the LCD.
+void beep():
+	make buzzer beep briefly
+void reset():
+	reset all devices to off
+switch power():
+	if power is off, turn on fan and leave everything else to be changed
+	if power is on, reset everything and only check if the power button is pressed or the PIR detects motion
+	
+[callback functions for buttons]
+button_pressed():
+	confirm the button is pressed
+joystick_pressed():
+	confirm button is pressed
+
+FAN OPERATION
+void fan_on():
+	activate the motor to chosen fixed speed
+void fan_off():
+	cuts power to fan
+
+FAN MOVEMENT
+mode_switch():
+	flip the oscillation mode
+oscillate():
+	servo sweep slowly
+custom_dir():
+	check the position of the joystick, if above a certain value then the servo should turn in that direction which if below another value vice verso
+	create a deadzone
+
+program starts
+if button_detected or pir detected
+	if power is off[default
+		turn on fan
+		switch device power to on
+	id power is on
+		call reset function
+		change power status
+	reset button status
+else
+	if power is off do nothing #
+	if power is on
+		if joystick button detected, change oscillation mode
+		if joystick input is one way turn the servo that way 
+		same with other way
+		
+		
+
+

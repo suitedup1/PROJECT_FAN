@@ -4,10 +4,10 @@ INDEPENDENT PROCESSES:
 - Fan operation [speed, on/off]
 - Fan movement [oscillation/custom angle]
 - Auxiliary feedback like light and sound on different actions.
-
+2 lcd pins + 1 pir sensor pin + 1 motor pin + 1 servo pin+ 1 analog joystick + 1 joystick button + 1 reg button + a buzzer
+so 6-8 GPIO digital and 1 analogue
 FAN OPERATION:
-- A relay will be used to carry the 3.3v signal OUT to drive a motor connected to the NO pin
-- a potentiometer will be connected in series 
+- motor driver
 - A button should also be able to control the fan on it's own
 
 FAN MOVEMENT:
