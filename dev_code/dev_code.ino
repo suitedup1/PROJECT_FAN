@@ -6,9 +6,9 @@ volatile bool button_detected;
 volatile bool is_osci;
 volatile bool device_on;
 volatile bool is_fan_on;
-volatile long current_time;
-volatile long prev_time;
-
+volatile long now;
+volatile long last_trigger;
+ESP32PWM pwm;
 // pins
 int motor1;
 int motor2;
@@ -21,18 +21,31 @@ int button;
 Servo myservo;
 LiquidCrystal_I2C lcd(0x3F, 16, 2);
 void setup() {
+  
   initialise_devices();
   setinterrupt();
-  ESP32PWM::allocateTimer(0);
-  ESP32PWM::allocateTimer(1);
-  ESP32PWM::allocateTimer(2);
-  ESP32PWM::allocateTimer(3);
-  myservo.setPeriodHertz(50);
+
 }
 
 void loop() {
   //update time
-  
-  
-  custom_dir();
+  long now = millis();
+  check_button();
+  if (button_detected)
+  {
+    Serial.println("detected");
+    is_osci = !is_osci;
+  }
+  if (is_osci)
+  {
+    oscillate();
+  }
+  else if (!is_osci)
+  {
+    custom_dir();
+  }
+  if (pir_detected && now )
+  {
+    pir_detected = false;
+  }
 }

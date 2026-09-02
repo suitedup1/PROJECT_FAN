@@ -6,6 +6,11 @@ void ARDUINO_ISR_ATTR pir_ISR()
 {
   pir_detected = true;
 }
+// check button
+void check_button()
+{
+  button_detected = !digitalRead(button);
+}
 int mapangle()
 {
   int val = analogRead(pot);
@@ -14,10 +19,7 @@ int mapangle()
   return ang;
 }
 // independent processes
-bool is_pressed()
-{
-  return digitalRead(button);
-}
+
 
 void setinterrupt()
 {
@@ -33,8 +35,13 @@ void initialise_devices()
   device_on = false;
   is_fan_on = false;
   //servo timers
-  
-
+  ESP32PWM::allocateTimer(0);
+  ESP32PWM::allocateTimer(1);
+  ESP32PWM::allocateTimer(2);
+  ESP32PWM::allocateTimer(3);
+  myservo.setPeriodHertz(50);
+  //timer
+  last_trigger = 0;
   // pins
   motor1 = 33;
   motor2 = 32;
@@ -82,6 +89,7 @@ void mode_switch()
 }
 void oscillate()
 {
+  Serial.println("in oscillating mode");
   int ang = 90;
   while (is_osci)
   {
@@ -89,13 +97,29 @@ void oscillate()
       {
         myservo.write(ang);
         ang--;
+        check_button();
+        if (button_detected)
+        {
+          is_osci = false;
+          button_detected = false;
+          break;
+        }
       }
       while ( ang<180)
       {
         myservo.write(ang);
         ang++;
+        check_button();
+        if (button_detected)
+        {
+          is_osci = false;
+          button_detected = false;
+          break;
+        }
       }
+      
   }
+  delay(400);
   
 }
 void custom_dir()
@@ -104,32 +128,49 @@ void custom_dir()
   Serial.println("in custom dir");
   
   int value;
-  int ang = 120;
-  myservo.write(ang);
-  /*
-  while(true)//testing
+  int current_ang = 90;
+  myservo.write(current_ang);
+  
+  while(!is_osci)//testing
   {
-    int ang2 = mapangle();
-    Serial.println(ang2);
-    if (ang2 >= ang)
-    {
-      for (int i = ang2; i >= ang; ang--)
+    int target = mapangle();
+    Serial.println("Target:");
+    Serial.println(target);
+    to_target(current_ang, target);
+    current_ang = mapangle();
+    check_button();
+    if (button_detected)
       {
-        myservo.write(i);
-        delay(15);
+        Serial.println("detected in custom dir");
+        is_osci = true;
+        button_detected = false;
+        delay(400);
       }
-    }
-    else 
-    {
-      for (int i = ang2; i <= ang; ang++)
-      {
-        myservo.write(i);
-        delay(15);
-      }
-    }
-    
   }
-  */
+  
+}
+void to_target(int current_ang, int target)
+{
+  if (current_ang > target)
+    {
+      for (int i = current_ang; i > target; i--)
+      {
+        myservo.write(i);
+        delay(15);
+      }
+    }
+  else if (current_ang > target)
+  {
+    for (int i = current_ang; i < target; i++)
+    {
+      myservo.write(i);
+      delay(15);
+    }
+  }
+  else
+  {
+    Serial.println("at postion");
+  }
 }
 void reset()
 {

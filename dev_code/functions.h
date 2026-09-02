@@ -13,8 +13,8 @@ extern int pir;
 extern int servo;
 extern int pot;
 extern int buzzer;
-extern volatile long current_time;
-extern volatile long prev_time;
+extern volatile long now;
+extern volatile long last_trigger;
 
 // for interrupts
 extern int button;
@@ -24,8 +24,9 @@ extern LiquidCrystal_I2C lcd;
 // lcd init
 
 void ARDUINO_ISR_ATTR pir_ISR();
+void to_target(int current_ang, int target);
+void check_button();
 int mapangle();
-bool is_pressed();
 void setinterrupt();
 void initialise_devices();
 void displaytime();

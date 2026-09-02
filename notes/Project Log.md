@@ -370,6 +370,12 @@ turns out i did kind of need an interrupt - to break out of while loops
 
 custom dir function nor eorking
 
+faulty servo
+
+must delay after button press to chekc properly
+
+
+
 * wire up and test LCD
 * write basic code logic and test
 * write full code logic and tets
