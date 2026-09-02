@@ -374,9 +374,16 @@ faulty servo
 
 must delay after button press to chekc properly
 
+pir sensor
 
+check pir in every loop
+
+set now inside checker function
 
 * wire up and test LCD
+
+
+
 * write basic code logic and test
 * write full code logic and tets
 * measure dimensions
@@ -384,4 +391,439 @@ must delay after button press to chekc properly
 * download fan design
 * 3d print
 * assemble
+
+
+
+
+### **FORMATTED**
+
+Setting up ESP8266:
+
+
+
+\* Install the correct driver from \[https://www.silabs.com/software-and-tools/usb-to-uart-bridge-vcp-drivers?tab=downloads](https://www.silabs.com/software-and-tools/usb-to-uart-bridge-vcp-drivers?tab=downloads)
+
+\* Ensure that the USB cable being used is appropriate for data transmission.
+
+\* Set up the Arduino IDE for the board using the tutorial from Last Minute Engineers.
+
+
+
+Using the PIR sensor:
+
+
+
+\* It senses movement and then writes HIGH to a data pin before changing it back to LOW.
+
+\* Use interrupts.
+
+\* Set motion to true, then set it back to false once it has been processed in the main program.
+
+NOTE 2:
+
+\* 60-second startup time.
+
+\* Had to power it using 3.3V by connecting to a different pin on the board: \[https://techgurka.blogspot.com/2013/05/cheap-pyroelectric-infrared-pir-motion.html](https://techgurka.blogspot.com/2013/05/cheap-pyroelectric-infrared-pir-motion.html)
+
+\* Having major issues with it being unreliable and activating periodically.
+
+\* The baud rate for the ESP8266 is 115200.
+
+\* Changing the sensitivity of the sensor didn't do anything.
+
+\* Changing the delay for the sensor didn't help either.
+
+\* Turns out my code is of poor quality.
+
+
+
+NOTES FOR PROGRAMMING PRINCIPLES EMBEDDED SYSTEMS #1
+
+
+
+\* Interrupts are used because you don't need to constantly check the current value of a pin. When a change is detected, an event is triggered.
+
+\* For Arduino and ESP32, use the `attachInterrupt()` function to program interrupts.
+
+\* Parameters are:
+
+1\. GPIO \[use `digitalPinToInterrupt(pin)`]
+
+2\. The ISR \[notes below]
+
+3\. The mode:
+
+\* LOW: triggers the interrupt whenever the pin is LOW.
+
+\* HIGH: triggers the interrupt whenever the pin is HIGH.
+
+\* CHANGE: triggers the interrupt whenever the pin changes value (e.g., from HIGH to LOW or LOW to HIGH).
+
+\* FALLING: triggers when the pin goes from HIGH to LOW.
+
+\* RISING: triggers when the pin goes from LOW to HIGH.
+
+
+
+
+
+
+
+
+
+
+
+KEY NOTES FOR ISRs:
+
+
+
+\* Another important detail about ISRs is that you should keep their code as fast and simple as possible. Avoid complex operations, writing to the Serial Monitor, or using `delay()`. Instead, use a flag or counter to indicate that the interrupt happened, and then handle whatever you need to do in the main code or `loop()` section.
+
+\* Variables that are used inside ISRs and throughout the rest of the code should preferably be declared as `volatile`. This prevents the compiler from caching values in registers (and skipping memory access), ensuring reads and writes always access the actual memory location to reflect unexpected changes caused by the interrupt.
+
+
+
+USING TIMERS:
+
+
+
+\* We don't use the `delay()` function because it blocks code execution and doesn't allow anything else to run, making simultaneous actions impossible.
+
+
+
+The `millis()` function:
+
+
+
+\* This function returns the number of milliseconds passed since the program started. It's useful because it allows us to check how much time has passed since a certain event without blocking the code execution.
+
+Etiquette:
+
+\* Use `unsigned long` for variables that hold time values.
+
+\* Use constants for variables that don't change.
+
+\* When using timers, save moments in time when causing an event to happen by setting `previousMillis = currentMillis`.
+
+\* Use a `bool` variable to maintain status on whether the timer is currently running (activated in the ISR).
+
+
+
+Had to replace the 4-digit 7-segment display because it was a common anode, and I'm not inverting that tutorial.
+
+Switching to an LCD screen...
+
+
+
+First, find the address using the code supplied by Last Minute Engineers.
+
+Address: 0x3F
+
+
+
+Use the LiquidCrystal\_I2C library installed on the Arduino IDE.
+
+
+
+\* Include the library.
+
+\* Create an object of the LiquidCrystal\_I2C class using the code below:
+
+`// Enter the I2C address and the dimensions of your LCD here`
+
+`LiquidCrystal\_I2C lcd(address, width, height);`
+
+\* `lcd.init()` // Initializes interface to LCD
+
+\* `lcd.clear()` // Erases screen and moves cursor to top-left corner
+
+\* `lcd.backlight()` // Turns on backlight
+
+\* `lcd.setCursor(2,0)` // Moves cursor to column 3, row 1
+
+(The cursor tells the LCD where to place new text on the screen)
+
+\* `lcd.print(text)` // Self-explanatory
+
+\* `lcd.blink()` and `lcd.noBlink()` // Turn on and off a blinking cursor
+
+
+
+For a message longer than 16 characters, you can scroll the display:
+
+
+
+```cpp
+
+void loop() {
+
+&#x20; lcd.scrollDisplayLeft(); // Scroll everything to the left by one position
+
+&#x20; delay(300);              // Small delay for visible scrolling speed
+
+}
+
+
+
+```
+
+
+
+What actually is Vin?
+
+
+
+Note:
+
+GPIO4 and GPIO5 are the safest GPIOs to use if you want to operate relays.
+
+
+
+Vin can be used to power the board, but it has also been shown to provide voltage output, according to this comment on Circuit Digest:
+
+
+
+"The answer to your query is both yes and no. Yes, because if you connect your NodeMCU to your Laptop/PC through a USB cable, the output voltage of the USB port is 5.0V (which you measured at 4.9V). You can use this power as input for the NodeMCU as well as the other sensors attached to it. But on the other side, no, because the USB port has a very low current rating (max 500mA). If you connect the NodeMCU and several sensors to power them both up, there is a high chance your PC's USB port could get damaged."
+
+
+
+In short, let's not risk frying my laptop from now on.
+
+
+
+However, we have a problem.
+
+The LCD, PIR sensor, and Joystick all operate at 5V, with the DC motor ideally needing 6V. However, I only have an unresearched 9V battery.
+
+
+
+Battery comparison:
+
+
+
+\* Li-Ion | Voltage: 3.6-3.7V per cell | Discharge rate: High | Capacity range: High | Advantages: High energy density, long life cycle
+
+\* Li-Po | Voltage: 3.7V per cell | Discharge rate: Very high | Capacity range: Medium-High | Advantages: Light, high discharge, flexible shape
+
+\* NiMH | Voltage: 1.2V per cell | Discharge rate: Medium | Capacity range: Low-Medium | Advantages: Safe, inexpensive
+
+
+
+Shape: The best choice is LiPo due to its flat, soft pouches.
+
+"Drones, small robots, and robotic arms frequently use LiPo since it is the sole material that allows for extremely flexible sizing."
+
+Slight power issue here.
+
+
+
+LiPo offers the highest discharge rate, making it ideal for robotics like racing bots, RC robots, and quadcopters that need quick power bursts.
+
+
+
+Li-Ion: Best overall for multi-hour robotic work cycles.
+
+NiMH: Best for simple, low-cost robotics.
+
+
+
+Of all the lithium chemistries, LiFePO4 (a subcategory of Li-Ion) is the safest.
+
+
+
+The maximum level of protection and BMS oversight are necessary for standard LiPo packs.
+
+
+
+Although NiMH is stable, it lacks the power required for sophisticated robotics.
+
+
+
+Safety issues:
+
+Why BMS (Battery Management System) matters:
+
+Li-Ion/LiPo packs of any size run the risk of overcharging or deep discharging, which can possibly cause them to catch fire. Safety is greatly increased by adding a basic PCB protection board.
+
+
+
+A voltage regulator has 3 pins:
+
+
+
+\* Output
+
+\* Input
+
+\* Ground
+
+
+
+Input comes from the original power source.
+
+Ground is connected to GND.
+
+Output provides the regulated voltage.
+
+
+
+For a DC motor, I need to use an L298N motor driver.
+
+For the joystick, a 5V input is still required.
+
+If I can order some voltage regulators, they should solve the power issue.
+
+Never mind, they are extremely inefficient and waste power as heat.
+
+However, they do provide a stable voltage and low noise, though I don't really care about that.
+
+
+
+Switching regulators are more expensive.
+
+Options are buck converters or voltage regulators.
+
+
+
+Batteries:
+
+
+
+\* Lithium-ion (Li-Ion)
+
+\* Lithium-polymer (Li-Po)
+
+\* Nickel-metal hydride (NiMH)
+
+
+
+Summary of yesterday:
+
+I wrote the pseudocode logic.
+
+Realized I might need structs to be more efficient, but I'm not doing that for this project.
+
+Soldered and fried two buck converters before realizing that I inverted the voltage.
+
+Corrected that mistake.
+
+I found a workaround to control the fan with just one PWM input by examining the library to pull different pins to HIGH and LOW.
+
+Also, remember: declare functions in the header file, and define/implement them in the source file.
+
+
+
+Used parameters when the variables were already global, which was unnecessary.
+
+Wired up the motor, but forgot to connect the ground.
+
+The motor is constantly powered.
+
+Now there is a wiring issue where nothing is moving, even though the function is running.
+
+The battery is charged.
+
+None of the pins have made it work.
+
+The board is now unusable.
+
+Switching to the ESP32, which frees up my GPIO pin usage.
+
+
+
+Steps:
+
+
+
+1\. Wire up and test the motor.
+
+\* Motor pins: 32 and 33.
+
+\* Forgot to connect GND.
+
+\* PWM must have power; pulled up to 3.3V logic.
+
+
+
+
+
+2\. Wire up and test the joystick.
+
+\* The joystick runs at 5V, so don't force lower voltages into it.
+
+\* Using a regular button and a potentiometer instead.
+
+\* A wire was in the wrong place.
+
+\* Fan ON and OFF states had incorrect logic.
+
+\* Should be changed to a FALLING interrupt, as the button connects to GND.
+
+\* I think I need to implement a timer because the button is stopping immediately.
+
+\* Timer implemented, but it's not working the way I intended. The button is supposed to act as a switch.
+
+\* Never mind again; interrupts seem unsuitable for this project, so I am going to use polling.
+
+\* Unpredictable behavior when using this button.
+
+\* Testing if the button is actually always pressed by checking for a LOW output.
+
+\* CHANGED TO SHORTER WIRES.
+
+
+
+
+
+3\. Testing the potentiometer:
+
+\* Forgot to check which pins were ADC.
+
+\* Using pin 34, which is an input-only ADC1 pin.
+
+
+
+
+
+4\. Wire up and test the servo:
+
+\* Pin 18.
+
+\* Turns out I did kind of need an interrupt to break out of `while` loops.
+
+\* Custom `dir` function is not working.
+
+\* Faulty servo.
+
+\* Must add a delay after a button press to check properly.
+
+
+
+
+
+5\. PIR sensor:
+
+\* Check the PIR sensor in every loop.
+
+\* State set now inside the checker function.
+
+
+
+
+
+6\. Wire up and test the LCD.
+
+7\. Write basic code logic and test.
+
+8\. Write full code logic and test.
+
+9\. Measure dimensions.
+
+10\. Design 3D-printed housing and mesh.
+
+11\. Download fan design.
+
+12\. 3D print components.
+
+13\. Assemble.
 
