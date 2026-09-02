@@ -93,7 +93,7 @@ This function returns the number of ms passed since the start of the program. It
 
 
 
-Had to replace 4 digit 7 segment display because it was common anode and I'm not inverting that tutorial. 
+Had to replace 4 digit 7 segment display because it was common anode and I'm not inverting that tutorial.
 
 ###### **Using LCD screen...**
 
@@ -181,7 +181,7 @@ The LCD, PIR sensor, and Joystick all operate at 5v,  with the DC motor needing 
 
 
 
-|**Battery** |**Voltage \[per cell]**|**Discharge rate**|**capacity range**|**Advantages**|
+|**Battery**|**Voltage \[per cell]**|**Discharge rate**|**capacity range**|**Advantages**|
 |-|-|-|-|-|
 |Li-Ion|3.6-3.7V|High|High|High energy density, long life cycle|
 |Li-Po|3.7V|Very high|medium-high|light, high discharge, flexible shape|
@@ -265,9 +265,9 @@ for the joystick a 5v input is still required
 
 Okay if i can order some voltage regulators they should solves the power issue
 
-nevermind they are extremely inefficient and waste power as heat 
+nevermind they are extremely inefficient and waste power as heat
 
-But they do provide a stable voltage and low noise t really care about that. 
+But they do provide a stable voltage and low noise t really care about that.
 
 
 
@@ -286,4 +286,96 @@ Batteries:
 * Nickel metal hydride \[NiMH]
 
 
+
+
+
+
+
+Right so summary of yesterday:
+
+* i wrote the pseudocode logic
+* realised i might need structs to be more efficient but im not doing that this project
+* soldered and fried 2 buck converters before realising that I inverted the voltage
+* Corrected that
+* I found a workaround to control the fan with just 1 pwm input - and pulling different pins to high and low by examining the library
+* also you DECLARE in the header, DEFINE/ IMPLEMENT in the source file
+
+
+
+used parameters when the variables are global - unnecessary
+
+wiring up motor - forgot to connect ground
+
+motor is constantly powered
+
+now theres a wiring issue and nothing is moving but the function is running
+
+battery is charged
+
+none of the pins have let it work
+
+the board is unusuable.
+
+switching to esp32, freeing me up in gpio pin usage 
+
+
+
+
+
+steps:
+
+* wire up and test motor
+
+motor pins: 32 and 33
+
+forgot to connect gnd
+
+pwm must have power, pulled up to 3.3v logic
+
+* wire up and test joystick
+
+joysticks runs at 5v, dont force it
+
+using a regular button and a pot
+
+wire was in wrong place
+
+fan on and off states were not correct logic
+
+should be changed to falling interrupt as button connect to gnd
+
+i think i need to implement a timer because the button is stopping immediately
+
+timer implemented but its not rrly working the way i inteded. the button is to act as a switch
+
+nevermind again, interrups seem unsuitable for this project i am going to use polling
+
+unpredictable behavior when using this button
+
+testing if the button is actually always pressed so seeing if theres a low output
+
+CHANGED TO SHORTER WIRES
+
+testing potentiometer
+
+forgot to check which pins were adc
+
+using pin 34, input only adc1 pin
+
+* wire up and test servo
+
+pin 18 
+
+turns out i did kind of need an interrupt - to break out of while loops
+
+custom dir function nor eorking
+
+* wire up and test LCD
+* write basic code logic and test
+* write full code logic and tets
+* measure dimensions
+* design 3D printed housing, and mesh
+* download fan design
+* 3d print
+* assemble
 

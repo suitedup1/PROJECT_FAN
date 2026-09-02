@@ -1,73 +1,84 @@
 #include <LiquidCrystal_I2C.h>
-#include <Servo.h>
-#include <Arduino.h>
+#include <ESP32Servo.h>
 #include "functions.h"
-
-// statuses
-volatile bool pir_detected = false;
-volatile bool joystick_detected = false;
-volatile bool button_detected = false;
-volatile bool is_osci = false;
-volatile bool device_on = false;
-volatile bool is_fan_on = false;
-// pins
-int motor;
-int pir;
-int servo;
-int joystick;
-int buzzer;
-// for interrupts
-int joystick_button;
-int reg_button;
-Servo myservo;
-// lcd init
-LiquidCrystal_I2C lcd(0x3F, 16, 2);
-
 // ISRs
-void pir_ISR()
+void ARDUINO_ISR_ATTR pir_ISR()
 {
   pir_detected = true;
 }
-void joytick_ISR()
+int mapangle()
 {
-  joystick_detected = true;
-}
-void button_ISR()
-{
-  button_detected = true;
+  int val = analogRead(pot);
+  int ang = map(val, 0, 4096, 0, 180);
+  Serial.println(ang);
+  return ang;
 }
 // independent processes
-
-
-void setinterrupt(int pir,int joystick_button,void (*pir_ISR)(),void (*joystick_ISR)())
+bool is_pressed()
 {
-  attachInterrupt(digitalPinToInterrupt(pir), pir_ISR, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(joystick_button), pir_ISR, RISING);
+  return digitalRead(button);
 }
-void intitialise_devices(int motor,int servo,int buzzer)
+
+void setinterrupt()
 {
-  pinMode(motor, OUTPUT);
-  myservo.attach(servo);
-  pinMode(buzzer, OUTPUT);
+  attachInterrupt(digitalPinToInterrupt(pir), pir_ISR, RISING);
+}
+void initialise_devices()
+{
+  
+  // statuses
+  pir_detected = false;
+  button_detected = false;
+  is_osci = false; //for testing
+  device_on = false;
+  is_fan_on = false;
+  //servo timers
+  
+
+  // pins
+  motor1 = 33;
+  motor2 = 32;
+  pir = 1;
+  servo = 18;
+  pot = 34;
+  // for interrupts
+  button = 19;
+  // lcd init
+  LiquidCrystal_I2C lcd(0x3F, 16, 2);
+  pinMode(motor1, OUTPUT);
+  pinMode(motor2, OUTPUT);
+  pinMode(button, INPUT_PULLUP);
+  myservo.attach(servo, 500, 2400);
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  Serial.begin(115200);
+  //pinMode(buzzer, OUTPUT);
 }
   // no initialisation required for joystick
-void displaytime()
+void display()
 {
-  lcd.print("Turning on...");
+  lcd.print("???");
 }
 // fan operation
-void fan_on(int motor)
+void fan_on()
 {
-  digitalWrite(motor, HIGH);
+  digitalWrite(motor1, HIGH);
+  digitalWrite(motor2, LOW);
+  Serial.println("spinning");
+  is_fan_on = !is_fan_on;
 }
-void fan_off(int motor)
+void fan_off()
 {
-  digitalWrite(motor, HIGH);
+  digitalWrite(motor1, LOW);
+  digitalWrite(motor2, LOW);
+  Serial.println("stopping");
+  is_fan_on = !is_fan_on;
 }
 // fan movement
 void mode_switch()
 {
-  is_osci = !is_osci;
+  is_osci = false;
 }
 void oscillate()
 {
@@ -89,29 +100,42 @@ void oscillate()
 }
 void custom_dir()
 {
+  
+  Serial.println("in custom dir");
+  
   int value;
-  int ang = 90;
-  while(!is_osci)
+  int ang = 120;
+  myservo.write(ang);
+  /*
+  while(true)//testing
   {
-    value = analogRead(joystick);
-    if (value > 600)
+    int ang2 = mapangle();
+    Serial.println(ang2);
+    if (ang2 >= ang)
     {
-      ang++;
-      myservo.write(ang);
+      for (int i = ang2; i >= ang; ang--)
+      {
+        myservo.write(i);
+        delay(15);
+      }
     }
-    else if (value < 400)
+    else 
     {
-      ang--;
-      myservo.write(ang);
+      for (int i = ang2; i <= ang; ang++)
+      {
+        myservo.write(i);
+        delay(15);
+      }
     }
+    
   }
+  */
 }
 void reset()
 {
   fan_off();
   myservo.write(90);
   pir_detected = false;
- joystick_detected = false;
   button_detected = false;
   is_osci = false;
   device_on = false;

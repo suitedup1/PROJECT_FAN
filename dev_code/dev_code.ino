@@ -1,41 +1,38 @@
+#include <LiquidCrystal_I2C.h>
+#include <ESP32Servo.h>
 #include "functions.h"
+volatile bool pir_detected;
+volatile bool button_detected;
+volatile bool is_osci;
+volatile bool device_on;
+volatile bool is_fan_on;
+volatile long current_time;
+volatile long prev_time;
+
+// pins
+int motor1;
+int motor2;
+int pir;
+int servo;
+int pot;
+int buzzer;
+// for interrupts
+int button;
+Servo myservo;
+LiquidCrystal_I2C lcd(0x3F, 16, 2);
 void setup() {
-  // put your setup code here, to run once:
-  void intitialise_devices(int motor,int servo,int buzzer);
-  void setinterrupt(int pir,int joystick_button,void (*pir_ISR)(),void (*joystick_ISR)());
+  initialise_devices();
+  setinterrupt();
+  ESP32PWM::allocateTimer(0);
+  ESP32PWM::allocateTimer(1);
+  ESP32PWM::allocateTimer(2);
+  ESP32PWM::allocateTimer(3);
+  myservo.setPeriodHertz(50);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  displaytime();
-  if (button_detected)
-  {
-    if (!device_on)
-    {
-      device_on = true;
-      fan_on(motor);
-    }
-    else:
-    {
-      reset();
-    }
-  }
-  else:
-  {
-    if (device_on)
-    {
-      if (joystick_detected)
-      {
-        mode_switch();
-      }
-      else if (!is_osci)
-      {
-        custom_dir();
-      }
-      else if (is_osci)
-      {
-        oscillate();
-      }
-    }
-  }
+  //update time
+  
+  
+  custom_dir();
 }

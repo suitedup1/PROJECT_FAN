@@ -1,32 +1,37 @@
 #pragma once
-/*
-volatile bool pir_detected = false;
-volatile bool joystick_detected = false;
-volatile bool is_osci = false;
-volatile bool device_on = false;
-volatile bool is_fan_on = false;
+
+// statuses
+extern volatile bool pir_detected;
+extern volatile bool button_detected;
+extern volatile bool is_osci;
+extern volatile bool device_on;
+extern volatile bool is_fan_on;
 // pins
-int STANDBY;
-int IN1;
-int pir;
-int servo;
-int joystick;
-int buzzer;
+extern int motor1;
+extern int motor2;
+extern int pir;
+extern int servo;
+extern int pot;
+extern int buzzer;
+extern volatile long current_time;
+extern volatile long prev_time;
+
 // for interrupts
-int joystick_button;
-int reg_button;
-Servo myservo;
+extern int button;
+extern Servo myservo;
 // lcd init
-LiquidCrystal_I2C lcd(0x3F, 16, 2);
-*/
-void pir_ISR();
-void joytick_ISR();
-void button_ISR();
-void setinterrupt(int pir,int joystick_button,void (*pir_ISR)(),void (*joystick_ISR)());
-void intitialise_devices(int motor,int servo,int buzzer);
+extern LiquidCrystal_I2C lcd;
+// lcd init
+
+void ARDUINO_ISR_ATTR pir_ISR();
+int mapangle();
+bool is_pressed();
+void setinterrupt();
+void initialise_devices();
 void displaytime();
-void fan_on(int motor);
-void fan_off(int motor);
+void fan_on();
+void fan_off();
 void mode_switch();
 void oscillate();
 void custom_dir();
+void reset();
