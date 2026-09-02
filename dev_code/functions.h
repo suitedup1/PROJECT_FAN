@@ -24,6 +24,7 @@ extern LiquidCrystal_I2C lcd;
 // lcd init
 
 void ARDUINO_ISR_ATTR pir_ISR();
+void check_pir();
 void to_target(int current_ang, int target);
 void check_button();
 int mapangle();

@@ -21,31 +21,34 @@ int button;
 Servo myservo;
 LiquidCrystal_I2C lcd(0x3F, 16, 2);
 void setup() {
-  
+
   initialise_devices();
   setinterrupt();
-
 }
 
 void loop() {
   //update time
   long now = millis();
   check_button();
-  if (button_detected)
-  {
+  if (button_detected) {
     Serial.println("detected");
     is_osci = !is_osci;
   }
-  if (is_osci)
-  {
+  if (is_osci) {
     oscillate();
-  }
-  else if (!is_osci)
-  {
+  } else if (!is_osci) {
     custom_dir();
   }
-  if (pir_detected && now )
-  {
+  if (pir_detected && (now - last_trigger) > 500) {
     pir_detected = false;
+    Serial.println("pir detected");
+    is_fan_on = !is_fan_on;
+    if (is_fan_on) {
+      fan_on();
+    } else {
+      fan_off();
+    }
+    now = last_trigger;
+
   }
 }

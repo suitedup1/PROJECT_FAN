@@ -6,6 +6,24 @@ void ARDUINO_ISR_ATTR pir_ISR()
 {
   pir_detected = true;
 }
+void check_pir()
+{
+  long now = millis();
+  Serial.println("in pir");
+  delay(100);
+  if (pir_detected && (now - last_trigger) > 500) {
+    pir_detected = false;
+    Serial.println("pir detected");
+    is_fan_on = !is_fan_on;
+    if (is_fan_on) {
+      fan_on();
+    } else {
+      fan_off();
+    }
+    now = last_trigger;
+    
+  }
+}
 // check button
 void check_button()
 {
@@ -45,7 +63,7 @@ void initialise_devices()
   // pins
   motor1 = 33;
   motor2 = 32;
-  pir = 1;
+  pir = 17;
   servo = 18;
   pot = 34;
   // for interrupts
@@ -61,6 +79,9 @@ void initialise_devices()
   lcd.setCursor(0, 0);
   Serial.begin(115200);
   //pinMode(buzzer, OUTPUT);
+  //delay
+  Serial.print("warming up...");
+  delay(60000);
 }
   // no initialisation required for joystick
 void display()
@@ -73,14 +94,12 @@ void fan_on()
   digitalWrite(motor1, HIGH);
   digitalWrite(motor2, LOW);
   Serial.println("spinning");
-  is_fan_on = !is_fan_on;
 }
 void fan_off()
 {
   digitalWrite(motor1, LOW);
   digitalWrite(motor2, LOW);
   Serial.println("stopping");
-  is_fan_on = !is_fan_on;
 }
 // fan movement
 void mode_switch()
@@ -104,6 +123,7 @@ void oscillate()
           button_detected = false;
           break;
         }
+        check_pir();
       }
       while ( ang<180)
       {
@@ -116,6 +136,7 @@ void oscillate()
           button_detected = false;
           break;
         }
+        check_pir();
       }
       
   }
@@ -157,6 +178,7 @@ void to_target(int current_ang, int target)
       {
         myservo.write(i);
         delay(15);
+        check_pir();
       }
     }
   else if (current_ang > target)
@@ -165,12 +187,14 @@ void to_target(int current_ang, int target)
     {
       myservo.write(i);
       delay(15);
+      check_pir();
     }
   }
   else
   {
     Serial.println("at postion");
   }
+  check_pir();
 }
 void reset()
 {
